@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import styles from './TaskList.module.css';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import MaterialTable from "material-table";
-
-import { forwardRef } from 'react';
+import {Task} from '../task/Task';
+import {showTasks} from '../actions/tasksActions';
+import {forwardRef} from 'react';
 
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
@@ -22,63 +22,51 @@ import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 
 const tableIcons = {
-    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
-    Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
-    Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
-    DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
-    Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
-    Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
-    FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
-    LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
-    NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
-    ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
-    SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
-    ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
-    ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
+    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref}/>),
+    Check: forwardRef((props, ref) => <Check {...props} ref={ref}/>),
+    Clear: forwardRef((props, ref) => <Clear {...props} ref={ref}/>),
+    Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref}/>),
+    DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref}/>),
+    Edit: forwardRef((props, ref) => <Edit {...props} ref={ref}/>),
+    Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref}/>),
+    Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref}/>),
+    FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref}/>),
+    LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref}/>),
+    NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref}/>),
+    PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref}/>),
+    ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref}/>),
+    Search: forwardRef((props, ref) => <Search {...props} ref={ref}/>),
+    SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref}/>),
+    ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref}/>),
+    ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref}/>)
 };
-export function TaskList() {
-    let dataTask = [
-        {
-            description: "Descripcion 1",
-            date: "26/07/2020",
-            active: true,
-        },
-        {
-            description: "Descripcion 2",
-            date: "26/07/2020",
-            active: true,
-        },
 
-        {
-            description: "Descripcion 3",
-            date: "26/01/2020",
-            active: true,
-        },
+class TaskList extends Component {
 
-        {
-            description: "Descripcion 2",
-            date: "26/03/2020",
-            active: true,
-        },
-
-    ]
-
-    return (
-        <div style={{ maxWidth: "100%" }}>
-                <MaterialTable
-                    icons={tableIcons}
-                    columns={[
-                        { title: "Descripción", field: "description" },
-                        { title: "Fecha de Creación", field: "date", type: "date" },
-                        { title: "Vigente", field: "active" },
-                    ]}
-                    data={dataTask}
-                    title="Lista de Tareas"
-                />
-        </div>
-    );
+    componentDidMount() {
+        this.props.showTasks();
+    }
+    render() {
+        const {tasks} = this.props;
+        return (
+            <div style={{maxWidth: "100%"}}>
+            <Task/>
+            <MaterialTable
+                icons={tableIcons}
+                columns={[
+                    {title: "Descripción", field: "description"},
+                    {title: "Fecha de Creación", field: "dateCreation", type: "date"},
+                    {title: "Vigente", field: "active", type: 'boolean'},
+                ]}
+                data={tasks}
+                title="Lista de Tareas"
+            />
+        </div>);
+    }
 }
+
+const mapStateToProps = state => ({
+    tasks: state.tasks.tasks
+})
+
+export default connect(mapStateToProps, { showTasks })(TaskList);
