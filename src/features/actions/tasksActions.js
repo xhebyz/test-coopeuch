@@ -3,9 +3,6 @@ import {SHOW_TASK_LIST, EDIT_TASK, ADD_TASK, DELETE_TASK, SHOW_TASK} from './typ
 
 export const showTasks = () => async dispatch => {
     const res = await axios.get('http://localhost:8080/tasks');
-
-    console.log(res)
-
     dispatch({
         type: SHOW_TASK_LIST,
         payload: res.data

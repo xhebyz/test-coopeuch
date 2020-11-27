@@ -1,9 +1,13 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
 import MaterialTable from "material-table";
 import {Task} from '../task/Task';
-import {showTasks} from '../actions/tasksActions';
+import {showTasks, addTasks, editTask, deleteTask} from '../actions/tasksActions';
 import {forwardRef} from 'react';
+import Modal from '@material-ui/core/Modal';
+import Button from '@material-ui/core/Button';
+import AddIcon from '@material-ui/icons/Add';
+import { makeStyles } from '@material-ui/core/styles';
 
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
@@ -43,25 +47,95 @@ const tableIcons = {
 
 class TaskList extends Component {
 
+    state = {
+        open: false,
+        isNew: false,
+        selectedTask : {}
+    };
+
+    style = {
+        modal: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+        }
+    }
+
+    handleOpenEdit = (task) => {
+        this.setState({
+            open: true,
+            isNew: false,
+            selectedTask:task
+        });
+    };
+
+
+    handleOpenNew = () => {
+        this.setState({
+            open: true,
+            isNew: true
+        });
+    };
+
+    handleClose = () => {
+        this.setState({
+            open: false,
+            isNew: false
+        });
+    };
+
     componentDidMount() {
         this.props.showTasks();
     }
+
     render() {
         const {tasks} = this.props;
         return (
             <div style={{maxWidth: "100%"}}>
-            <Task/>
-            <MaterialTable
-                icons={tableIcons}
-                columns={[
-                    {title: "Descripción", field: "description"},
-                    {title: "Fecha de Creación", field: "dateCreation", type: "date"},
-                    {title: "Vigente", field: "active", type: 'boolean'},
-                ]}
-                data={tasks}
-                title="Lista de Tareas"
-            />
-        </div>);
+
+                <Button variant="contained" onClick={this.handleOpenNew}>Añadir Tarea <AddIcon /></Button>
+
+                <Modal
+                    open={this.state.open}
+                    onClose={this.handleClose}
+                    aria-labelledby="simple-modal-title"
+                    aria-describedby="simple-modal-description"
+                    className={this.style.modal}
+                >
+                    <Task onClose={this.handleClose}  isNew={this.state.isNew} saveTask={this.props.addTasks} editTask={this.props.editTask} showTasks={this.props.showTasks} task={this.state.selectedTask}/>
+                </Modal>
+
+                <MaterialTable
+                    actions={[
+                        {
+                            icon: 'edit',
+                            tooltip: 'Editar Tarea',
+                            onClick: (event, rowData) => {
+                                console.log(rowData)
+                                this.handleOpenEdit(rowData)
+                                // Do save operation
+                            }
+                        },
+                        {
+                            icon: 'delete',
+                            tooltip: 'Eliminar Tarea',
+                            onClick: (event, rowData) => {
+                                console.log(rowData)
+                                // Do save operation
+                            }
+                        }
+
+                    ]}
+                    icons={tableIcons}
+                    columns={[
+                        {title: "Descripción", field: "description"},
+                        {title: "Fecha de Creación", field: "dateCreation", type: "date"},
+                        {title: "Vigente", field: "active", type: 'boolean'},
+                    ]}
+                    data={tasks}
+                    title="Lista de Tareas"
+                />
+            </div>);
     }
 }
 
@@ -69,4 +143,4 @@ const mapStateToProps = state => ({
     tasks: state.tasks.tasks
 })
 
-export default connect(mapStateToProps, { showTasks })(TaskList);
+export default connect(mapStateToProps, {showTasks, addTasks, editTask, deleteTask})(TaskList);
