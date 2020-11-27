@@ -7,7 +7,7 @@ import {forwardRef} from 'react';
 import Modal from '@material-ui/core/Modal';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
@@ -50,7 +50,7 @@ class TaskList extends Component {
     state = {
         open: false,
         isNew: false,
-        selectedTask : {}
+        selectedTask: {}
     };
 
     style = {
@@ -65,7 +65,7 @@ class TaskList extends Component {
         this.setState({
             open: true,
             isNew: false,
-            selectedTask:task
+            selectedTask: task
         });
     };
 
@@ -92,49 +92,51 @@ class TaskList extends Component {
         const {tasks} = this.props;
         return (
             <div style={{maxWidth: "100%"}}>
+                <div style={{marginTop: '15px', marginRight: '15px', textAlign: 'right'}}>
+                    <Button variant="contained" onClick={this.handleOpenNew}>Añadir Tarea <AddIcon/></Button>
+                </div>
+                <div style={{marginTop: '15px'}}>
+                    <Modal
+                        open={this.state.open}
+                        onClose={this.handleClose}
+                        aria-labelledby="simple-modal-title"
+                        aria-describedby="simple-modal-description"
+                        className={this.style.modal}
+                    >
+                        <Task onClose={this.handleClose} isNew={this.state.isNew} saveTask={this.props.addTasks}
+                              editTask={this.props.editTask} showTasks={this.props.showTasks}
+                              task={this.state.selectedTask}/>
+                    </Modal>
 
-                <Button variant="contained" onClick={this.handleOpenNew}>Añadir Tarea <AddIcon /></Button>
-
-                <Modal
-                    open={this.state.open}
-                    onClose={this.handleClose}
-                    aria-labelledby="simple-modal-title"
-                    aria-describedby="simple-modal-description"
-                    className={this.style.modal}
-                >
-                    <Task onClose={this.handleClose}  isNew={this.state.isNew} saveTask={this.props.addTasks} editTask={this.props.editTask} showTasks={this.props.showTasks} task={this.state.selectedTask}/>
-                </Modal>
-
-                <MaterialTable
-                    actions={[
-                        {
-                            icon: 'edit',
-                            tooltip: 'Editar Tarea',
-                            onClick: (event, rowData) => {
-                                console.log(rowData)
-                                this.handleOpenEdit(rowData)
-                                // Do save operation
+                    <MaterialTable
+                        actions={[
+                            {
+                                icon: 'edit',
+                                tooltip: 'Editar Tarea',
+                                onClick: (event, rowData) => {
+                                    this.handleOpenEdit(rowData)
+                                    // Do save operation
+                                }
+                            },
+                            {
+                                icon: 'delete',
+                                tooltip: 'Eliminar Tarea',
+                                onClick: (event, rowData) => {
+                                    this.props.deleteTask(rowData.id)
+                                }
                             }
-                        },
-                        {
-                            icon: 'delete',
-                            tooltip: 'Eliminar Tarea',
-                            onClick: (event, rowData) => {
-                                console.log(rowData)
-                                // Do save operation
-                            }
-                        }
 
-                    ]}
-                    icons={tableIcons}
-                    columns={[
-                        {title: "Descripción", field: "description"},
-                        {title: "Fecha de Creación", field: "dateCreation", type: "date"},
-                        {title: "Vigente", field: "active", type: 'boolean'},
-                    ]}
-                    data={tasks}
-                    title="Lista de Tareas"
-                />
+                        ]}
+                        icons={tableIcons}
+                        columns={[
+                            {title: "Descripción", field: "description"},
+                            {title: "Fecha de Creación", field: "dateCreation", type: "date", defaultSort: "desc"},
+                            {title: "Vigente", field: "active", type: 'boolean'},
+                        ]}
+                        data={tasks}
+                        title="Lista de Tareas"
+                    />
+                </div>
             </div>);
     }
 }

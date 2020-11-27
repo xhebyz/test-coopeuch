@@ -1,12 +1,14 @@
 import React from 'react';
 import Paper from '@material-ui/core/Paper';
-import {makeStyles} from '@material-ui/core/styles';
+import {makeStyles, withStyles} from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import Alert from '@material-ui/lab/Alert';
+import Collapse from '@material-ui/core/Collapse';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -27,10 +29,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 export function Task(props) {
-
-    console.log(props)
     let isEdit = !props.isNew
-
     let activeDefault = true
     let descriptionDefault = ''
     let taskDefault = {}
@@ -44,9 +43,15 @@ export function Task(props) {
     const [edit_task, setTask] = React.useState(taskDefault);
     const [checked, setChecked] = React.useState(activeDefault);
     const [description, setDescription] = React.useState(descriptionDefault);
-
+    const [open, setOpen] = React.useState(false);
 
     const saveTask = () => {
+
+        if (!description) {
+            setOpen(true);
+            return
+        }
+
         let task = {
             'description': description,
             'active': checked
@@ -79,16 +84,33 @@ export function Task(props) {
     const changeDescription = (event) => {
         setDescription(event.target.value);
     };
-
-
     const classes = useStyles();
-
     return (
-        <Paper elevation={3}>
-            <IconButton aria-label="close">
-                <CloseIcon fontSize="medium" onClick={props.onClose}/>
-            </IconButton>
+        <Paper elevation={3} style={{margin: '15px'}}>
+            <Collapse in={open}>
+                <Alert severity="error"
+                       action={
+                           <IconButton
+                               aria-label="close"
+                               color="inherit"
+                               size="small"
+                               onClick={() => {
+                                   setOpen(false);
+                               }}
+                           >
+                               <CloseIcon fontSize="inherit"/>
+                           </IconButton>
+                       }
+                >
+                    Descripción no valida
+                </Alert>
+            </Collapse>
 
+            <div style={{textAlign: 'right'}}>
+                <IconButton aria-label="close">
+                    <CloseIcon fontSize="small" onClick={props.onClose}/>
+                </IconButton>
+            </div>
             <div className={classes.root}>
                 <form className={classes.form}>
                     <div>
@@ -96,7 +118,9 @@ export function Task(props) {
                     </div>
                     <div>
                         <TextField id="standard-basic" label="Descripción" onChange={changeDescription}
-                                   value={description}/>
+                                   value={description} multiline helperText={'Es necesario una descripción'}
+                                   required
+                        />
                     </div>
                     <div>
                     </div>
